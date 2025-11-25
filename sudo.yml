@@ -1,0 +1,12 @@
+- hosts: all
+  user: student
+  become: True
+  become_method: sudo
+  tasks:
+  - name: Ensure the ansible user is sudoer with no password required
+    lineinfile: 
+      dest: /etc/sudoers
+      state: present
+      regexp: '^tenece ALL\='
+      line: 'tenece ALL=(ALL) NOPASSWD:ALL,REBOOT,!SUROOT,!VISUDO'
+      validate: '/usr/sbin/visudo -cf %s'
