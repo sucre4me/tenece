@@ -1,5 +1,4 @@
 - hosts: all
-  user: student
   become: True
   become_method: sudo
   tasks:
