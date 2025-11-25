@@ -1,0 +1,11 @@
+- hosts: all
+  user: student
+  become: True
+  become_method: sudo
+  tasks:
+  - name: create user tenece
+    user:
+      name: tenece
+      state: present
+      comment: AAP Installation Test
+      shell: /bin/bash
