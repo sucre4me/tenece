@@ -9,3 +9,5 @@
       state: present
       comment: AAP Installation Test
       shell: /bin/bash
+      home: /home/tenece
+      password: $6$5IRLnFZo03Olm7eX
