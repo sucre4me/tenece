@@ -1,0 +1,16 @@
+---
+- name: Install PuTTY on Windows Server
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Ensure Chocolatey is installed
+      ansible.windows.win_chocolatey:
+        name: chocolatey
+        state: present
+
+    - name: Install PuTTY
+      ansible.windows.win_chocolatey:
+        name: putty
+        state: present
