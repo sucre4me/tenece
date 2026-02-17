@@ -5,6 +5,11 @@
 
   tasks:
 
+    - name: Ensure C:\Temp exists
+      ansible.windows.win_file:
+        path: C:\Temp
+        state: directory
+
     - name: Download PuTTY MSI
       ansible.windows.win_get_url:
         url: https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.80-installer.msi
@@ -14,3 +19,4 @@
       ansible.windows.win_package:
         path: C:\Temp\putty.msi
         state: present
+
