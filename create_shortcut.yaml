@@ -1,0 +1,11 @@
+---
+- name: Setup Firefox on Windows
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Create Firefox Desktop Shortcut
+      community.windows.win_shortcut:
+        src: 'C:\Program Files\Mozilla Firefox\firefox.exe'
+        dest: 'C:\Users\Public\Desktop\Firefox.lnk'
+        description: 'Mozilla Firefox Web Browser'
+        icon: 'C:\Program Files\Mozilla Firefox\firefox.exe,0'
