@@ -11,6 +11,6 @@
         state: present
 
     - name: Install PuTTY
-      ansible.windows.win_chocolatey:
+      chocolatey.chocolatey.win_chocolatey:
         name: putty
         state: present
