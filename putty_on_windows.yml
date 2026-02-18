@@ -3,12 +3,11 @@
   gather_facts: false
   tasks:
     - name: Ensure Chocolatey is installed (if not already)
-      ansible.windows.win_chocolatey:
+      chocolatey.chocolatey.win_chocolatey:
         name: chocolatey
         state: present
-      when: ansible_windows_managed_host_is_domain_member is defined and not ansible_windows_managed_host_is_domain_member
 
     - name: Install PuTTY via Chocolatey
-      ansible.windows.win_chocolatey:
+      chocolatey.chocolatey.win_chocolatey:
         name: putty
         state: present
