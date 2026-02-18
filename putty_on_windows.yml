@@ -1,5 +1,5 @@
 - name: Install PuTTY on Windows Server using Chocolatey
-  hosts: windows_servers
+  hosts: windows
   gather_facts: false
   tasks:
     - name: Ensure Chocolatey is installed (if not already)
