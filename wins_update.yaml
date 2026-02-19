@@ -1,0 +1,18 @@
+---
+- name: Apply Windows Updates
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Install Critical and Security Updates
+      ansible.windows.win_updates:
+        category_names:
+          - CriticalUpdates
+          - SecurityUpdates
+        state: installed
+        reboot: true
+        reboot_timeout: 1200
+      register: update_result  # Indented under the task name
+
+    - name: Show installed updates
+      debug:                   # A new task to show the result
+        var: update_result.updates
