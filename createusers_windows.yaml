@@ -1,0 +1,20 @@
+---
+- name: Create Local Admin User
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Create a new local user
+      ansible.windows.win_user:
+        name: "aap_admin"
+        password: "abc123"
+        state: present
+        groups:
+          - Users
+        password_never_expires: true
+
+    - name: Add user to Administrators group
+      ansible.windows.win_group_membership:
+        name: Administrators
+        members:
+          - aap_admin
+        state: present
