@@ -1,9 +1,16 @@
 ---
-- name: Setup Firefox on Windows
+- name: Install Firefox on Windows Server 2022
   hosts: windows
   gather_facts: false
+
   tasks:
-    - name: Install Firefox via Chocolatey
+
+    - name: Ensure Chocolatey is installed
+      chocolatey.chocolatey.win_chocolatey:
+        name: chocolatey
+        state: present
+
+    - name: Install Firefox using Chocolatey
       chocolatey.chocolatey.win_chocolatey:
         name: firefox
         state: present
