@@ -10,4 +10,4 @@
     - name: Install PuTTY via Chocolatey
       chocolatey.chocolatey.win_chocolatey:
         name: putty
-        state: absent
+        state: present
