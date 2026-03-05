@@ -16,5 +16,5 @@
       ansible.windows.win_group_membership:
         name: Administrators
         members:
-          - aap_admin
+          - aap_admin2
         state: present
