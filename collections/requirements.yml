@@ -1,4 +1,7 @@
 ---
 collections:
-  - name: chocolatey.chocolatey
-  - name: community.windows
+  #- name: chocolatey.chocolatey
+  #- name: community.windows
+  - name: redhat.openshift_virtualization
+    version: 2.2.3
+    source: https://hub.teneceocp.com
