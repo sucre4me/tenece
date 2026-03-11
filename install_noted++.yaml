@@ -1,0 +1,13 @@
+- name: Install PuTTY on Windows Server using Chocolatey
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Ensure Chocolatey is installed (if not already)
+      chocolatey.chocolatey.win_chocolatey:
+        name: chocolatey
+        state: present
+
+    - name: Install Notepad++ using Chocolatey
+      chocolatey.chocolatey.win_chocolatey:
+        name: notepadplusplus
+        state: present
