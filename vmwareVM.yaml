@@ -5,8 +5,7 @@
     - vmware.vmware
 
   vars:
-    # Use the ESXi host's IP or hostname
-    esxi_ip: "{{ lookup('env','VMWARE_HOST') }}"
+    esxi_ip: "192.168.9.7"
     datastore: "datastore1"
     network_name: "VM Network"
     vm_name: "rhel8-auto-vm"
@@ -15,15 +14,14 @@
     - name: Create VM from ISO in datastore1
       vmware.vmware.vm:
         hostname: "{{ esxi_ip }}"
-        username: "{{ lookup('env','VMWARE_USER') }}"
+        username: "root"
         password: "{{ lookup('env','VMWARE_PASSWORD') }}"
         validate_certs: false
 
-        # For standalone ESXi, use these instead of datacenter/cluster
-        esxi_host: "{{ esxi_ip }}"
+        # For standalone ESXi, leave out 'datacenter', 'cluster', and 'esxi_host'
+        # The datastore is the only required placement parameter
         datastore: "{{ datastore }}"
-        folder: "ha-datacenter/vm" # Default folder for standalone ESXi
-
+        
         name: "{{ vm_name }}"
         state: present
         guest_id: rhel8_64Guest
