@@ -32,6 +32,7 @@
           - size_gb: 40
             type: thin
             datastore: "{{ datastore }}"
+            device_node: "scsi0:0"  # Required field added
 
         cpu:
           count: 2
@@ -41,10 +42,12 @@
 
         scsi_controllers:
           - type: pvscsi
+            bus_number: 0
 
         cdroms:
           - type: iso
             iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
+            device_node: "sata0:0"  # Required field added
 
         network_adapters:
           - name: "{{ network }}"
