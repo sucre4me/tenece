@@ -21,6 +21,7 @@
 
         datacenter: "{{ datacenter }}"
         cluster: "{{ cluster }}"
+        datastore: "{{ datastore }}" # Added here at the top level
         folder: "{{ datacenter }}/vm"
 
         name: "{{ vm_name }}"
@@ -31,7 +32,7 @@
           - device_node: "scsi(0:0)"
             datastore: "{{ datastore }}"
             provisioning: thin
-            size: "40gb"  # Fixed: Use string format "40gb"
+            size: "40gb"
 
         cpu:
           cores: 2
