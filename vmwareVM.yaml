@@ -1,12 +1,12 @@
-- name: Create VM in vCenter without template
+- name: Create VM directly on ESXi host
   hosts: localhost
   gather_facts: no
   collections:
     - vmware.vmware
 
   vars:
-    datacenter: "Datacenter"
-    cluster: "Cluster01"
+    # Use the ESXi host's IP or hostname
+    esxi_ip: "{{ lookup('env','VMWARE_HOST') }}"
     datastore: "datastore1"
     network_name: "VM Network"
     vm_name: "rhel8-auto-vm"
@@ -14,15 +14,15 @@
   tasks:
     - name: Create VM from ISO in datastore1
       vmware.vmware.vm:
-        hostname: "{{ lookup('env','VMWARE_HOST') }}"
+        hostname: "{{ esxi_ip }}"
         username: "{{ lookup('env','VMWARE_USER') }}"
         password: "{{ lookup('env','VMWARE_PASSWORD') }}"
         validate_certs: false
 
-        datacenter: "{{ datacenter }}"
-        cluster: "{{ cluster }}"
+        # For standalone ESXi, use these instead of datacenter/cluster
+        esxi_host: "{{ esxi_ip }}"
         datastore: "{{ datastore }}"
-        folder: "vm" # Changed from 'Datacenter/vm' to just 'vm'
+        folder: "ha-datacenter/vm" # Default folder for standalone ESXi
 
         name: "{{ vm_name }}"
         state: present
