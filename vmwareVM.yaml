@@ -31,8 +31,8 @@
         disks:
           - device_node: "scsi0:0"
             datastore: "{{ datastore }}"
-            provisioning: thin      # Changed from 'type'
-            size:                   # Required dictionary
+            provisioning: thin
+            size:
               gb: 40
 
         cpu:
@@ -42,10 +42,10 @@
           size_mb: 4096
 
         scsi_controllers:
-          - type: pvscsi
-            bus_number: 0
+          - bus_number: 0
+            type: pvscsi
+            controller_type: pvscsi  # Required twice in v2.7.0
 
-        # Most modern guest_ids require a SATA controller for the CDROM
         sata_controllers:
           - bus_number: 0
 
