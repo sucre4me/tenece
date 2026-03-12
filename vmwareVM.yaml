@@ -18,9 +18,10 @@
         password: "{{ lookup('env','VMWARE_PASSWORD') }}"
         validate_certs: false
 
-        # Required to satisfy the v2.7.0 module validation for ESXi
+        # Required to satisfy version 2.7.0 for standalone ESXi
         datacenter: "ha-datacenter"
-        folder: "/ha-datacenter/vm" 
+        folder: "/ha-datacenter/vm"
+        resource_pool: "Resources"    # Added: Default pool for standalone ESXi
         datastore: "{{ datastore }}"
         
         name: "{{ vm_name }}"
