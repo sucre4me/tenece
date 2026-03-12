@@ -44,7 +44,7 @@
         scsi_controllers:
           - bus_number: 0
             type: pvscsi
-            controller_type: pvscsi  # Required twice in v2.7.0
+            controller_type: paravirtual  # Corrected from 'pvscsi'
 
         sata_controllers:
           - bus_number: 0
