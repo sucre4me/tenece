@@ -25,7 +25,6 @@
 
         name: "{{ vm_name }}"
         state: present
-        power_state: poweredon
         guest_id: rhel8_64Guest
 
         disks:
@@ -36,26 +35,24 @@
               gb: 40
 
         cpu:
-          count: 2
+          num_cpus: 2  # Changed from 'count' to 'num_cpus'
 
         memory:
           size_mb: 4096
 
         scsi_controllers:
           - bus_number: 0
-            type: pvscsi
-            controller_type: paravirtual
+            controller_type: paravirtual # Removed 'type'
 
         sata_controllers:
           - bus_number: 0
 
         cdroms:
           - device_node: "sata0:0"
-            type: iso
-            iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
+            iso_media_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso" # Changed from 'iso_path'
 
         network_adapters:
-          - network: "{{ network_name }}"  # Changed from 'name' to 'network'
-            type: vmxnet3
+          - network: "{{ network_name }}"
+            adapter_type: vmxnet3 # Changed from 'type'
 
       delegate_to: localhost
