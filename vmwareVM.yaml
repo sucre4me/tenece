@@ -14,7 +14,7 @@
 
   tasks:
     - name: Create VM from ISO in datastore1
-      vmware.vmware.vmware_guest:
+      vmware.vmware:
         hostname: "{{ lookup('env','VMWARE_HOST') }}"
         username: "{{ lookup('env','VMWARE_USER') }}"
         password: "{{ lookup('env','VMWARE_PASSWORD') }}"
