@@ -18,8 +18,9 @@
         password: "{{ lookup('env','VMWARE_PASSWORD') }}"
         validate_certs: false
 
-        # For standalone ESXi, leave out 'datacenter', 'cluster', and 'esxi_host'
-        # The datastore is the only required placement parameter
+        # Required to satisfy the v2.7.0 module validation for ESXi
+        datacenter: "ha-datacenter"
+        folder: "/ha-datacenter/vm" 
         datastore: "{{ datastore }}"
         
         name: "{{ vm_name }}"
