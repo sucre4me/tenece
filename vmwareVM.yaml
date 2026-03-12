@@ -1,4 +1,3 @@
----
 - name: Create VM in vCenter without template
   hosts: localhost
   gather_facts: no
@@ -22,28 +21,32 @@
 
         datacenter: "{{ datacenter }}"
         cluster: "{{ cluster }}"
-        folder: "/{{ datacenter }}/vm"
+        folder: "{{ datacenter }}/vm"
 
         name: "{{ vm_name }}"
-        state: present
-        power_state: poweredon
+        state: poweredon
         guest_id: rhel8_64Guest
 
-        disk:
+        disks:
           - size_gb: 40
             type: thin
             datastore: "{{ datastore }}"
 
-        hardware:
-          memory_mb: 4096
-          num_cpus: 2
+        cpu:
+          count: 2
 
-        cdrom:
-          type: iso
-          iso_path: "[datastore1] rhel-8.10-x86_64-dvd.iso"
+        memory:
+          size_mb: 4096
 
-        networks:
+        scsi_controllers:
+          - type: pvscsi
+
+        cdroms:
+          - type: iso
+            iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
+
+        network_adapters:
           - name: "{{ network }}"
-            type: dhcp
+            type: vmxnet3
 
       delegate_to: localhost
