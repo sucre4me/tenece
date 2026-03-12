@@ -29,10 +29,11 @@
         guest_id: rhel8_64Guest
 
         disks:
-          - size_gb: 40
-            type: thin
+          - device_node: "scsi0:0"
             datastore: "{{ datastore }}"
-            device_node: "scsi0:0"  # Required field added
+            provisioning: thin      # Changed from 'type'
+            size:                   # Required dictionary
+              gb: 40
 
         cpu:
           count: 2
@@ -44,10 +45,14 @@
           - type: pvscsi
             bus_number: 0
 
+        # Most modern guest_ids require a SATA controller for the CDROM
+        sata_controllers:
+          - bus_number: 0
+
         cdroms:
-          - type: iso
+          - device_node: "sata0:0"
+            type: iso
             iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
-            device_node: "sata0:0"  # Required field added
 
         network_adapters:
           - name: "{{ network }}"
