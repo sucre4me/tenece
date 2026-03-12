@@ -28,14 +28,14 @@
         guest_id: rhel8_64Guest
 
         disks:
-          - device_node: "scsi0:0"
+          - device_node: "scsi(0:0)"  # Fixed syntax: scsi(0:0)
             datastore: "{{ datastore }}"
             provisioning: thin
             size:
               gb: 40
 
         cpu:
-          cores: 2  # Changed from 'num_cpus' to 'cores' for v2.7.0
+          cores: 2
 
         memory:
           size_mb: 4096
@@ -48,7 +48,7 @@
           - bus_number: 0
 
         cdroms:
-          - device_node: "sata0:0"
+          - device_node: "sata(0:0)"  # Fixed syntax: sata(0:0)
             iso_media_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
 
         network_adapters:
