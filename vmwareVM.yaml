@@ -25,7 +25,8 @@
         folder: "/{{ datacenter }}/vm"
 
         name: "{{ vm_name }}"
-        state: poweredon
+        state: present
+        power_state: poweredon
         guest_id: rhel8_64Guest
 
         disk:
