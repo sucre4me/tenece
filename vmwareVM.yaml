@@ -8,7 +8,7 @@
     datacenter: "Datacenter"
     cluster: "Cluster01"
     datastore: "datastore1"
-    network: "VM Network"
+    network_name: "VM Network"
     vm_name: "rhel8-auto-vm"
 
   tasks:
@@ -44,7 +44,7 @@
         scsi_controllers:
           - bus_number: 0
             type: pvscsi
-            controller_type: paravirtual  # Corrected from 'pvscsi'
+            controller_type: paravirtual
 
         sata_controllers:
           - bus_number: 0
@@ -55,7 +55,7 @@
             iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
 
         network_adapters:
-          - name: "{{ network }}"
+          - network: "{{ network_name }}"  # Changed from 'name' to 'network'
             type: vmxnet3
 
       delegate_to: localhost
