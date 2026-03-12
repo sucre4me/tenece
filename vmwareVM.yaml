@@ -1,0 +1,48 @@
+---
+- name: Create VM in vCenter without template
+  hosts: localhost
+  gather_facts: no
+  collections:
+    - vmware.vmware
+
+  vars:
+    datacenter: "Datacenter"
+    cluster: "Cluster01"
+    datastore: "datastore1"
+    network: "VM Network"
+    vm_name: "rhel8-auto-vm"
+
+  tasks:
+    - name: Create VM from ISO in datastore1
+      vmware.vmware.vmware_guest:
+        hostname: "{{ lookup('env','VMWARE_HOST') }}"
+        username: "{{ lookup('env','VMWARE_USER') }}"
+        password: "{{ lookup('env','VMWARE_PASSWORD') }}"
+        validate_certs: false
+
+        datacenter: "{{ datacenter }}"
+        cluster: "{{ cluster }}"
+        folder: "/{{ datacenter }}/vm"
+
+        name: "{{ vm_name }}"
+        state: poweredon
+        guest_id: rhel8_64Guest
+
+        disk:
+          - size_gb: 40
+            type: thin
+            datastore: "{{ datastore }}"
+
+        hardware:
+          memory_mb: 4096
+          num_cpus: 2
+
+        cdrom:
+          type: iso
+          iso_path: "[datastore1] rhel-8.10-x86_64-dvd.iso"
+
+        networks:
+          - name: "{{ network }}"
+            type: dhcp
+
+      delegate_to: localhost
