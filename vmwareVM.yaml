@@ -21,8 +21,8 @@
 
         datacenter: "{{ datacenter }}"
         cluster: "{{ cluster }}"
-        datastore: "{{ datastore }}" # Added here at the top level
-        folder: "{{ datacenter }}/vm"
+        datastore: "{{ datastore }}"
+        folder: "vm" # Changed from 'Datacenter/vm' to just 'vm'
 
         name: "{{ vm_name }}"
         state: present
