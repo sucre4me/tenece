@@ -25,7 +25,7 @@
         guest_id: rhel8_64Guest
         
         # INJECT KICKSTART HERE
-        boot_parameters: "inst.ks=http://{{ 192.168.9.5 }}:8080/ks.cfg"
+        boot_parameters: "inst.ks=http://{{ bastion_ip }}:8080/ks.cfg"
         
         cpu:
           cores: 2
