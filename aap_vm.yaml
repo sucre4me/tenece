@@ -1,4 +1,5 @@
-- name: Create and Boot VM directly on ESXi host
+---
+- name: Create and Boot VM on ESXi host
   hosts: localhost
   gather_facts: no
   collections:
@@ -9,16 +10,17 @@
     datastore: "datastore1"
     network_name: "VM Network"
     vm_name: "rhel8-auto-vm"
+    iso_name: "rhel-8.10-x86_64-dvd.iso"
 
   tasks:
-    - name: Create and Configure VM with Boot Order
+    - name: Define and Create the VM
       vmware.vmware.vm:
         hostname: "{{ esxi_ip }}"
         username: "root"
         password: "{{ lookup('env','VMWARE_PASSWORD') }}"
         validate_certs: false
-
-        # Placement parameters for ESXi
+        
+        # Standalone ESXi Defaults
         datacenter: "ha-datacenter"
         folder: "/ha-datacenter/vm"
         resource_pool: "Resources"
@@ -26,15 +28,7 @@
         
         name: "{{ vm_name }}"
         state: present
-        power_state: poweredon      # Ensures the VM starts
         guest_id: rhel8_64Guest
-
-        # 1. Set BIOS Boot Order (Prioritize CD-ROM)
-        vm_options:
-          boot_order:
-            - cdrom
-            - disk
-            - ethernet
 
         disks:
           - device_node: "scsi(0:0)"
@@ -57,11 +51,21 @@
 
         cdroms:
           - device_node: "sata(0:0)"
-            iso_media_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
-            connect_at_power_on: true # 2. Force ISO to "insert" at boot
+            iso_media_path: "[{{ datastore }}] {{ iso_name }}"
+            # CRITICAL: Ensures the ISO is "plugged in" when the VM starts
+            connect_at_power_on: true 
 
         network_adapters:
           - network: "{{ network_name }}"
             adapter_type: vmxnet3
+
+    - name: Power on the VM to start installation
+      vmware.vmware.vm_powerstate:
+        hostname: "{{ esxi_ip }}"
+        username: "root"
+        password: "{{ lookup('env','VMWARE_PASSWORD') }}"
+        validate_certs: false
+        name: "{{ vm_name }}"
+        state: powered-on
 
       delegate_to: localhost
