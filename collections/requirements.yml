@@ -6,6 +6,6 @@ collections:
     version: 1.5.2
   - name: vmware.vmware
     version: 2.7.0
-  #- name: community.vmware
-  #  version: 6.2.0 # Or your preferred version
+  - name: community.vmware
+    version: 6.2.0 # Or your preferred version
 
