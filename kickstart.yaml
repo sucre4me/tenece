@@ -31,9 +31,10 @@
         state: present
         guest_id: rhel8_64Guest
         
-        # Force BIOS mode to ensure the TAB key works as expected
+        # --- FIX: Corrected Parameter Name ---
         vm_options:
-          firmware: bios
+          boot_firmware: bios
+        # ------------------------------------
 
         scsi_controllers:
           - bus_number: 0
@@ -76,8 +77,8 @@
         validate_certs: false
         datacenter: "ha-datacenter"
         name: "{{ vm_name }}"
-        # Wait for the VMware logo to disappear and RHEL menu to appear
-        delay: 20
+        # Increased delay to 25 seconds for safety
+        delay: 25
         keys_send:
           - TAB
         string_send: "{{ ks_command }}"
