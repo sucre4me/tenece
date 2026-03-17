@@ -16,7 +16,7 @@
     iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
     datacenter_name: "ha-datacenter"
 
-    # Added a leading space to ensure it appends correctly to the existing boot line
+    # Added leading space and ensured parameters are correct
     ks_command: " inst.ks=http://{{ bastion_ip }}:8080/ks.cfg ip=dhcp rd.live.check=0"
 
     vmware_user: "root"
@@ -79,9 +79,9 @@
         name: "{{ vm_name }}"
         state: powered-on
 
-    - name: 4. Wait 20s for BIOS/GRUB
+    - name: 4. Wait 3s for GRUB  # Catching the menu immediately
       ansible.builtin.pause:
-        seconds: 20
+        seconds: 3
 
     - name: "5. Press TAB (Fix: Datacenter Added)"
       community.vmware.vmware_guest_sendkey:
@@ -94,9 +94,9 @@
         keys_send: 
           - TAB
 
-    - name: 5b. Brief pause for UI response
+    - name: 5b. Brief pause for UI
       ansible.builtin.pause:
-        seconds: 2
+        seconds: 1
 
     - name: "6. Fast-Type URL (Fix: Datacenter Added)"
       community.vmware.vmware_guest_sendkey:
