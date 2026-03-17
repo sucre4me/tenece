@@ -1,5 +1,5 @@
 ---
-- name: Fast Automated RHEL 8 Installation (Final Fix - Clean Slate)
+- name: Fast Automated RHEL 8 Installation (Backspace Fix)
   hosts: localhost
   gather_facts: no
   connection: local
@@ -15,10 +15,6 @@
     network_name: "VM Network"
     iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
     datacenter_name: "ha-datacenter"
-
-    # 100 Backspaces + The absolute minimal boot command
-    ks_clear_and_type: "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b vmlinuz initrd=initrd.img inst.ks=http://{{ bastion_ip }}:8080/ks.cfg ip=dhcp"
-
     vmware_user: "root"
     vmware_password: "{{ lookup('env','VMWARE_PASSWORD') }}"
 
@@ -56,7 +52,7 @@
         cdroms: [{ device_node: "sata(0:0)", iso_media_path: "{{ iso_path }}", connect_at_power_on: true }]
         network_adapters: [{ network: "{{ network_name }}", adapter_type: vmxnet3 }]
 
-    - name: "3. Power On"
+    - name: 3. Power On
       vmware.vmware.vm_powerstate:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -70,7 +66,7 @@
       ansible.builtin.pause:
         seconds: 4
 
-    - name: "5. Press TAB"
+    - name: 5. Press TAB
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -80,11 +76,7 @@
         name: "{{ vm_name }}"
         keys_send: [ TAB ]
 
-    - name: 5b. Wait 1s
-      ansible.builtin.pause:
-        seconds: 1
-
-    - name: "6. Clear and Type URL"
+    - name: 6a. Clear existing boot line
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -92,14 +84,21 @@
         validate_certs: false
         datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
-        string_send: "{{ ks_clear_and_type }}"
-        sleep_time: 150 
+        keys_send: "{{ ['BACKSPACE'] * 60 }}"
+        sleep_time: 40
 
-    - name: 6b. Wait 2s
-      ansible.builtin.pause:
-        seconds: 2
+    - name: 6b. Type Kickstart URL
+      community.vmware.vmware_guest_sendkey:
+        hostname: "{{ esxi_ip }}"
+        username: "{{ vmware_user }}"
+        password: "{{ vmware_password }}"
+        validate_certs: false
+        datacenter: "{{ datacenter_name }}"
+        name: "{{ vm_name }}"
+        string_send: " inst.ks=http://{{ bastion_ip }}:8080/ks.cfg ip=dhcp"
+        sleep_time: 120
 
-    - name: "7. Press ENTER to Boot"
+    - name: 7. Press ENTER to Boot
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
