@@ -2,6 +2,7 @@
 - name: Fast Automated RHEL 8 Installation (Fixed Power & Key Tasks)
   hosts: localhost
   gather_facts: no
+  connection: local
   collections:
     - community.vmware
     - vmware.vmware
@@ -68,7 +69,7 @@
           - network: "{{ network_name }}"
             adapter_type: vmxnet3
 
-    - name: 3. Power On (Fix: Datacenter Added)
+    - name: "3. Power On (Fix: Datacenter Added)"
       vmware.vmware.vm_powerstate:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -82,7 +83,7 @@
       ansible.builtin.pause:
         seconds: 10
 
-    - name: 5. Press TAB (Fix: Datacenter Added)
+    - name: "5. Press TAB (Fix: Datacenter Added)"
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -90,9 +91,10 @@
         validate_certs: false
         datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
-        keys_send: [ TAB ]
+        keys_send: 
+          - TAB
 
-    - name: 6. Fast-Type URL (Fix: Datacenter Added)
+    - name: "6. Fast-Type URL (Fix: Datacenter Added)"
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -100,10 +102,9 @@
         validate_certs: false
         datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
-        sleep_time: 80 
         string_send: "{{ ks_command }}"
 
-    - name: 7. Press ENTER (Fix: Datacenter Added)
+    - name: "7. Press ENTER (Fix: Datacenter Added)"
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -111,4 +112,5 @@
         validate_certs: false
         datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
-        keys_send: [ ENTER ]
+        keys_send: 
+          - ENTER
