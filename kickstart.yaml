@@ -1,5 +1,5 @@
 ---
-- name: Fast Automated RHEL 8 Installation (Fixed Power & Key Tasks)
+- name: Fast Automated RHEL 8 Installation (Final Fix - Clean Slate)
   hosts: localhost
   gather_facts: no
   connection: local
@@ -16,8 +16,8 @@
     iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
     datacenter_name: "ha-datacenter"
 
-    # 50 backspaces (\b) to wipe the default boot line before typing our URL
-    ks_clear_and_type: "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b inst.ks=http://{{ bastion_ip }}:8080/ks.cfg ip=dhcp"
+    # 100 Backspaces + The absolute minimal boot command
+    ks_clear_and_type: "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b vmlinuz initrd=initrd.img inst.ks=http://{{ bastion_ip }}:8080/ks.cfg ip=dhcp"
 
     vmware_user: "root"
     vmware_password: "{{ lookup('env','VMWARE_PASSWORD') }}"
@@ -47,30 +47,16 @@
         name: "{{ vm_name }}"
         state: present
         guest_id: rhel8_64Guest
-        vm_options:
-          boot_firmware: bios
-        # FIXED: Added required controllers
-        scsi_controllers:
-          - bus_number: 0
-            controller_type: paravirtual
-        sata_controllers:
-          - bus_number: 0
+        vm_options: { boot_firmware: bios }
+        scsi_controllers: [{ bus_number: 0, controller_type: paravirtual }]
+        sata_controllers: [{ bus_number: 0 }]
         cpu: { cores: 2 }
         memory: { size_mb: 4096 }
-        disks:
-          - device_node: "scsi(0:0)"
-            datastore: "{{ datastore }}"
-            size: "40gb"
-            provisioning: thin
-        cdroms:
-          - device_node: "sata(0:0)"
-            iso_media_path: "{{ iso_path }}"
-            connect_at_power_on: true 
-        network_adapters:
-          - network: "{{ network_name }}"
-            adapter_type: vmxnet3
+        disks: [{ device_node: "scsi(0:0)", datastore: "{{ datastore }}", size: "40gb", provisioning: thin }]
+        cdroms: [{ device_node: "sata(0:0)", iso_media_path: "{{ iso_path }}", connect_at_power_on: true }]
+        network_adapters: [{ network: "{{ network_name }}", adapter_type: vmxnet3 }]
 
-    - name: "3. Power On (Fix: Datacenter Added)"
+    - name: "3. Power On"
       vmware.vmware.vm_powerstate:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -84,7 +70,7 @@
       ansible.builtin.pause:
         seconds: 4
 
-    - name: "5. Press TAB (Fix: Datacenter Added)"
+    - name: "5. Press TAB"
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -92,14 +78,13 @@
         validate_certs: false
         datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
-        keys_send: 
-          - TAB
+        keys_send: [ TAB ]
 
-    - name: 5b. Wait 1s for UI
+    - name: 5b. Wait 1s
       ansible.builtin.pause:
         seconds: 1
 
-    - name: "6. Clear line and type clean URL"
+    - name: "6. Clear and Type URL"
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -110,11 +95,11 @@
         string_send: "{{ ks_clear_and_type }}"
         sleep_time: 150 
 
-    - name: 6b. Wait for buffer to clear
+    - name: 6b. Wait 2s
       ansible.builtin.pause:
         seconds: 2
 
-    - name: "7. Press ENTER to Boot (Fix: Datacenter Added)"
+    - name: "7. Press ENTER to Boot"
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
@@ -122,5 +107,4 @@
         validate_certs: false
         datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
-        keys_send: 
-          - ENTER
+        keys_send: [ ENTER ]
