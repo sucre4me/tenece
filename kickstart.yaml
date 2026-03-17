@@ -1,5 +1,5 @@
 ---
-- name: Fast Automated RHEL 8 Installation (Fixed Controllers)
+- name: Fast Automated RHEL 8 Installation (Fixed Power & Key Tasks)
   hosts: localhost
   gather_facts: no
   collections:
@@ -13,8 +13,9 @@
     datastore: "datastore1"
     network_name: "VM Network"
     iso_path: "[{{ datastore }}] rhel-8.10-x86_64-dvd.iso"
+    datacenter_name: "ha-datacenter"
 
-    # 'ip=dhcp' turns on the network; 'rd.live.check=0' skips the slow media test.
+    # 'ip=dhcp' activates network; 'rd.live.check=0' skips media test.
     ks_command: " ip=dhcp inst.ks=http://{{ bastion_ip }}:8080/ks.cfg rd.live.check=0"
 
     vmware_user: "root"
@@ -27,17 +28,18 @@
         username: "{{ vmware_user }}"
         password: "{{ vmware_password }}"
         validate_certs: false
+        datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
         state: absent
       ignore_errors: yes
 
-    - name: 2. Create VM Configuration (With Controllers)
+    - name: 2. Create VM Configuration
       vmware.vmware.vm:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
         password: "{{ vmware_password }}"
         validate_certs: false
-        datacenter: "ha-datacenter"
+        datacenter: "{{ datacenter_name }}"
         folder: "/ha-datacenter/vm"
         resource_pool: "Resources"
         datastore: "{{ datastore }}"
@@ -46,38 +48,33 @@
         guest_id: rhel8_64Guest
         vm_options:
           boot_firmware: bios
-        
-        # --- FIX: Define Controllers ---
         scsi_controllers:
           - bus_number: 0
             controller_type: paravirtual
         sata_controllers:
           - bus_number: 0
-        
         cpu: { cores: 2 }
         memory: { size_mb: 4096 }
-        
         disks:
           - device_node: "scsi(0:0)"
             datastore: "{{ datastore }}"
             size: "40gb"
             provisioning: thin
-        
         cdroms:
           - device_node: "sata(0:0)"
             iso_media_path: "{{ iso_path }}"
             connect_at_power_on: true 
-        
         network_adapters:
           - network: "{{ network_name }}"
             adapter_type: vmxnet3
 
-    - name: 3. Power On
+    - name: 3. Power On (Fix: Datacenter Added)
       vmware.vmware.vm_powerstate:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
         password: "{{ vmware_password }}"
         validate_certs: false
+        datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
         state: powered-on
 
@@ -85,30 +82,33 @@
       ansible.builtin.pause:
         seconds: 10
 
-    - name: 5. Press TAB
+    - name: 5. Press TAB (Fix: Datacenter Added)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
         password: "{{ vmware_password }}"
         validate_certs: false
+        datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
         keys_send: [ TAB ]
 
-    - name: 6. Fast-Type URL (80ms delay)
+    - name: 6. Fast-Type URL (Fix: Datacenter Added)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
         password: "{{ vmware_password }}"
         validate_certs: false
+        datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
         sleep_time: 80 
         string_send: "{{ ks_command }}"
 
-    - name: 7. Press ENTER
+    - name: 7. Press ENTER (Fix: Datacenter Added)
       community.vmware.vmware_guest_sendkey:
         hostname: "{{ esxi_ip }}"
         username: "{{ vmware_user }}"
         password: "{{ vmware_password }}"
         validate_certs: false
+        datacenter: "{{ datacenter_name }}"
         name: "{{ vm_name }}"
         keys_send: [ ENTER ]
