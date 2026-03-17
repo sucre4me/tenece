@@ -1,0 +1,13 @@
+# rulebook.yml
+- name: Sample rulebook
+  hosts: all
+  sources:
+    - ansible.eda.webhook:
+        port: 5000
+
+  rules:
+    - name: Debug event
+      condition: event.payload is defined
+      action:
+        debug:
+          msg: "Event received"
