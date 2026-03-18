@@ -5,7 +5,7 @@
   tasks:
     - name: Create a new local user
       ansible.windows.win_user:
-        name: "seplat_admin"
+        name: "sucre_admin"
         password: "Oyin@abc123!"
         state: present
         groups:
@@ -16,5 +16,5 @@
       ansible.windows.win_group_membership:
         name: Administrators
         members:
-          - seplat_admin
+          - sucre_admin
         state: present
