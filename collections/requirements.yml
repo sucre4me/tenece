@@ -5,6 +5,6 @@ collections:
  # - name: chocolatey.chocolatey
  #   version: 1.5.3
   - name: vmware.vmware
-    version: 2.7.0
+    version: 2.3.0
  
 
