@@ -1,6 +1,6 @@
 ---
 - name: Create Local Admin User
-  hosts: windows
+  hosts: all
   gather_facts: false
   tasks:
     - name: Create a new local user
