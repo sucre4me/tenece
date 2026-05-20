@@ -1,9 +1,9 @@
 ---
 collections:
   #- name: chocolatey.chocolatey
-  #- name: community.windows
-# - name: chocolatey.chocolatey
-#   version: 1.5.2
+ - name: community.windows
+ - name: chocolatey.chocolatey
+   version: 1.5.2
   - name: vmware.vmware
     version: 2.7.0
  
