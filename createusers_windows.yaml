@@ -2,8 +2,6 @@
 - name: Create Local Admin User
   hosts: windows
   gather_facts: false
-  environment:
-    PYTHONWARNINGS: "ignore::DeprecationWarning"
   tasks:
     - name: Create a new local user
       ansible.windows.win_user:
