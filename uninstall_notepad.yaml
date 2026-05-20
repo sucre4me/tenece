@@ -1,0 +1,28 @@
+---
+- name: Force Clean Purge of Notepad++
+  hosts: windows
+  gather_facts: false
+
+  tasks:
+    - name: 1. Uninstall the Chocolatey Installer package
+      chocolatey.chocolatey.win_chocolatey:
+        name: notepadplusplus.install
+        state: absent
+
+    - name: 2. Force remove the tracking wrapper if left over
+      chocolatey.chocolatey.win_chocolatey:
+        name: notepadplusplus
+        state: absent
+
+    - name: 3. Fail-safe - Force native Windows uninstall via package GUID
+      ansible.windows.win_package:
+        product_id: "Notepad++"
+        state: absent
+
+    - name: 4. Purge leftover application folders from disk
+      ansible.windows.win_file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - 'C:\Program Files\Notepad++'
+        - 'C:\Program Files (x86)\Notepad++'
