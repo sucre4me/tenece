@@ -16,5 +16,5 @@
       ansible.windows.win_group_membership:
         name: Administrators
         members:
-          - seplat_admin
+          - ubn_admin
         state: present
