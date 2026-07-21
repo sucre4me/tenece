@@ -1,0 +1,20 @@
+---
+- name: Register RHEL hosts to Red Hat Satellite
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Clean existing subscription-manager data
+      command: subscription-manager clean
+
+    - name: Register host to Satellite
+      shell: |
+        set -o pipefail && curl --silent --show-error --insecure 'https://satcdn.teneceocp.com/register?activation_keys=rhel9&download_utility=curl&location_id=2&organization_id=1&update_packages=false' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo0LCJpYXQiOjE3ODQ2NDIwNjYsImp0aSI6ImY0Y2FlZDQ0NWNlYThhZDg4ODNiOTc5ZDg1NmJiMTBmY2JjOGYyYWIyYmU1NmQ5MzVhYWY1YjM2OWQ4Y2FlNjIiLCJleHAiOjE3ODQ2NTY0NjYsInNjb3BlIjoicmVnaXN0cmF0aW9uI2dsb2JhbCByZWdpc3RyYXRpb24jaG9zdCJ9.1sBImgPyawL-vs2YZycLnFsUFi15IpUrUku7jTsZVEY' | bash
+      args:
+        executable: /bin/bash
+      register: registration
+
+    - name: Show registration output
+      debug:
+        var: registration.stdout_lines
