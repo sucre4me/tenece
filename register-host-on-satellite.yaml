@@ -10,21 +10,21 @@
       ansible.builtin.command:
         cmd: subscription-manager clean
 
-    - name: Dynamically generate the registration command from Satellite
+    - name: Generate Satellite registration command
       redhat.satellite.registration_command:
-        server_url: "{{ host }}"
-        username: "{{ username }}"
-        password: "{{ password }}"
+        server_url: "{{ lookup('env','FOREMAN_SERVER_URL') }}"
+        username: "{{ lookup('env','FOREMAN_USERNAME') }}"
+        password: "{{ lookup('env','FOREMAN_PASSWORD') }}"
         validate_certs: true
         organization: "1"
         location: "2"
         activation_keys:
-          - "rhel10"
+          - rhel10
       delegate_to: localhost
       become: false
       register: sat_registration
 
-    - name: Execute dynamic registration script on host
+    - name: Execute registration
       ansible.builtin.shell:
         cmd: "{{ sat_registration.registration_command }}"
       args:
@@ -32,6 +32,6 @@
       register: registration
       no_log: true
 
-    - name: Show registration output
+    - name: Show registration result
       ansible.builtin.debug:
         var: registration.stdout_lines
