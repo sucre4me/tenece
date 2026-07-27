@@ -37,8 +37,8 @@
         username: "{{ lookup('ansible.builtin.env', 'FOREMAN_USERNAME') }}"
         password: "{{ lookup('ansible.builtin.env', 'FOREMAN_PASSWORD') }}"
         validate_certs: false
-        organization: "1"
-        location: "2"
+        organization: "TENECE"
+        location: "SINARI"
         activation_keys:
           - "rhel10"
       delegate_to: localhost
