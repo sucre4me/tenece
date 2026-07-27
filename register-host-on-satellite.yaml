@@ -5,15 +5,16 @@
   gather_facts: false
 
   tasks:
+
     - name: Clean existing subscription-manager data
-      ansible.builtin.command: subscription-manager clean
+      ansible.builtin.command:
+        cmd: subscription-manager clean
 
     - name: Dynamically generate the registration command from Satellite
       redhat.satellite.registration_command:
-        # Pulls directly from the playbook execution's native variable mappings
-        server_url: "{{ satellite_url | default(lookup('ansible.builtin.env', 'FOREMAN_SERVER_URL')) }}"
-        username: "{{ satellite_username | default(lookup('ansible.builtin.env', 'FOREMAN_USERNAME')) }}"
-        password: "{{ satellite_password | default(lookup('ansible.builtin.env', 'FOREMAN_PASSWORD')) }}"
+        server_url: "{{ host }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
         validate_certs: true
         organization: "1"
         location: "2"
@@ -21,11 +22,6 @@
           - "rhel10"
       delegate_to: localhost
       become: false
-      vars:
-        # Maps the AAP container engine variables into explicit playbook tasks
-        satellite_url: "{{ ansible_env.FOREMAN_SERVER_URL | default('') }}"
-        satellite_username: "{{ ansible_env.FOREMAN_USERNAME | default('') }}"
-        satellite_password: "{{ ansible_env.FOREMAN_PASSWORD | default('') }}"
       register: sat_registration
 
     - name: Execute dynamic registration script on host
