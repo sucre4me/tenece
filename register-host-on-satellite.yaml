@@ -10,7 +10,7 @@
       ansible.builtin.command:
         cmd: subscription-manager clean
 
-    - name: Check injected environment variables
+    - name: Verify injected Satellite credential variables
       delegate_to: localhost
       become: false
       ansible.builtin.shell: |
@@ -27,16 +27,16 @@
       register: env_check
       changed_when: false
 
-    - name: Show injected environment variables
+    - name: Display injected environment variables
       ansible.builtin.debug:
         var: env_check.stdout_lines
 
-    - name: Dynamically generate the registration command from Satellite
+    - name: Generate registration command from Red Hat Satellite
       redhat.satellite.registration_command:
         server_url: "{{ lookup('ansible.builtin.env', 'FOREMAN_SERVER_URL') }}"
         username: "{{ lookup('ansible.builtin.env', 'FOREMAN_USERNAME') }}"
         password: "{{ lookup('ansible.builtin.env', 'FOREMAN_PASSWORD') }}"
-        validate_certs: true
+        validate_certs: false
         organization: "1"
         location: "2"
         activation_keys:
@@ -45,7 +45,11 @@
       become: false
       register: sat_registration
 
-    - name: Execute dynamic registration script on host
+    - name: Display generated registration command
+      ansible.builtin.debug:
+        var: sat_registration.registration_command
+
+    - name: Execute Satellite registration command
       ansible.builtin.shell:
         cmd: "{{ sat_registration.registration_command }}"
       args:
@@ -53,6 +57,6 @@
       register: registration
       no_log: true
 
-    - name: Show registration output
+    - name: Display registration output
       ansible.builtin.debug:
         var: registration.stdout_lines
