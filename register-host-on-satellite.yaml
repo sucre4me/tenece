@@ -10,10 +10,10 @@
 
     - name: Dynamically generate the registration command from Satellite
       redhat.satellite.registration_command:
-        # These variables are automatically supplied by the AAP Credential:
-        server_url: "{{ lookup('ansible.builtin.env', 'sat_server_url') }}"
-        username: "{{ lookup('ansible.builtin.env', 'sat_username') }}"
-        password: "{{ lookup('ansible.builtin.env', 'sat_password') }}"
+        # Correct environment variables injected by AAP's Satellite Credential Type:
+        server_url: "{{ lookup('ansible.builtin.env', 'FOREMAN_SERVER_URL') }}"
+        username: "{{ lookup('ansible.builtin.env', 'FOREMAN_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'FOREMAN_PASSWORD') }}"
         validate_certs: true
         organization: "1"
         location: "2"
@@ -30,3 +30,7 @@
         executable: /bin/bash
       register: registration
       no_log: true
+
+    - name: Show registration output
+      ansible.builtin.debug:
+        var: registration.stdout_lines
