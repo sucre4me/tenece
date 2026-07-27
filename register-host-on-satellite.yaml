@@ -10,9 +10,8 @@
 
     - name: Dynamically generate the registration command from Satellite
       redhat.satellite.registration_command:
-        server_url: "{{ lookup('ansible.builtin.env', 'FOREMAN_SERVER_URL') }}"
-        username: "{{ lookup('ansible.builtin.env', 'FOREMAN_USERNAME') }}"
-        password: "{{ lookup('ansible.builtin.env', 'FOREMAN_PASSWORD') }}"
+        # DO NOT use lookups here. Leaving these out forces the module to 
+        # naturally read the FOREMAN_ variables injected by your AAP credential.
         validate_certs: true
         organization: "1"
         location: "2"
@@ -20,11 +19,6 @@
           - "rhel10"
       delegate_to: localhost
       become: false
-      # This block preserves and passes the AAP credential vars to localhost:
-      environment:
-        FOREMAN_SERVER_URL: "{{ ansible_env.FOREMAN_SERVER_URL | default(lookup('ansible.builtin.env', 'FOREMAN_SERVER_URL')) }}"
-        FOREMAN_USERNAME: "{{ ansible_env.FOREMAN_USERNAME | default(lookup('ansible.builtin.env', 'FOREMAN_USERNAME')) }}"
-        FOREMAN_PASSWORD: "{{ ansible_env.FOREMAN_PASSWORD | default(lookup('ansible.builtin.env', 'FOREMAN_PASSWORD')) }}"
       register: sat_registration
 
     - name: Execute dynamic registration script on host
