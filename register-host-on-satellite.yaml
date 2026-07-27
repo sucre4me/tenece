@@ -10,7 +10,10 @@
 
     - name: Register host to Satellite
       shell: |
-        set -o pipefail && curl --silent --show-error  --insecure 'https://satcdn.teneceocp.com/register?activation_keys=rhel10&download_utility=curl&location_id=2&organization_id=1&update_packages=false' --header 'Authorization:: Bearer ${SATELLITE_BEARER}" | bash
+        set -o pipefail && \
+        curl --silent --show-error --insecure \
+        'https://satcdn.teneceocp.com/register?activation_keys=rhel10&download_utility=curl&location_id=2&organization_id=1&update_packages=false' \
+        --header "Authorization: Bearer ${SATELLITE_BEARER}" | bash
       args:
         executable: /bin/bash
       register: registration
