@@ -10,21 +10,42 @@
       ansible.builtin.command:
         cmd: subscription-manager clean
 
-    - name: Generate Satellite registration command
+    - name: Check injected environment variables
+      delegate_to: localhost
+      become: false
+      ansible.builtin.shell: |
+        echo "URL=$FOREMAN_SERVER_URL"
+        echo "USER=$FOREMAN_USERNAME"
+
+        if [ -n "$FOREMAN_PASSWORD" ]; then
+          echo "PASSWORD=SET"
+        else
+          echo "PASSWORD=NOT SET"
+        fi
+      args:
+        executable: /bin/bash
+      register: env_check
+      changed_when: false
+
+    - name: Show injected environment variables
+      ansible.builtin.debug:
+        var: env_check.stdout_lines
+
+    - name: Dynamically generate the registration command from Satellite
       redhat.satellite.registration_command:
-        server_url: "{{ lookup('env','FOREMAN_SERVER_URL') }}"
-        username: "{{ lookup('env','FOREMAN_USERNAME') }}"
-        password: "{{ lookup('env','FOREMAN_PASSWORD') }}"
+        server_url: "{{ lookup('ansible.builtin.env', 'FOREMAN_SERVER_URL') }}"
+        username: "{{ lookup('ansible.builtin.env', 'FOREMAN_USERNAME') }}"
+        password: "{{ lookup('ansible.builtin.env', 'FOREMAN_PASSWORD') }}"
         validate_certs: true
         organization: "1"
         location: "2"
         activation_keys:
-          - rhel10
+          - "rhel10"
       delegate_to: localhost
       become: false
       register: sat_registration
 
-    - name: Execute registration
+    - name: Execute dynamic registration script on host
       ansible.builtin.shell:
         cmd: "{{ sat_registration.registration_command }}"
       args:
@@ -32,6 +53,6 @@
       register: registration
       no_log: true
 
-    - name: Show registration result
+    - name: Show registration output
       ansible.builtin.debug:
         var: registration.stdout_lines
