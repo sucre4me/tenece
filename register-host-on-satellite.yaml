@@ -6,34 +6,27 @@
 
   tasks:
     - name: Clean existing subscription-manager data
-      command: subscription-manager clean
+      ansible.builtin.command: subscription-manager clean
 
-    - name: Verify bearer token exists
-      shell: |
-        if [ -z "$SATELLITE_BEARER" ]; then
-          echo "Token is empty"
-          exit 1
-        else
-          echo "Token exists"
-        fi
-      args:
-        executable: /bin/bash
-      register: bearer_check
+    - name: Dynamically generate the registration command from Satellite
+      redhat.satellite.registration_command:
+        # These variables are automatically supplied by the AAP Credential:
+        server_url: "{{ lookup('ansible.builtin.env', 'sat_server_url') }}"
+        username: "{{ lookup('ansible.builtin.env', 'sat_username') }}"
+        password: "{{ lookup('ansible.builtin.env', 'sat_password') }}"
+        validate_certs: true
+        organization: "1"
+        location: "2"
+        activation_keys:
+          - "rhel10"
+      delegate_to: localhost
+      become: false
+      register: sat_registration
 
-    - name: Show bearer check result
-      debug:
-        var: bearer_check.stdout
-
-    - name: Register host to Satellite
-      shell: |
-        set -o pipefail && \
-        curl --silent --show-error --insecure \
-        'https://satcdn.teneceocp.com/register?activation_keys=rhel10&download_utility=curl&location_id=2&organization_id=1&update_packages=false' \
-        --header "Authorization: Bearer ${SATELLITE_BEARER}" | bash
+    - name: Execute dynamic registration script on host
+      ansible.builtin.shell:
+        cmd: "{{ sat_registration.registration_command }}"
       args:
         executable: /bin/bash
       register: registration
-
-    - name: Show registration output
-      debug:
-        var: registration.stdout_lines
+      no_log: true
