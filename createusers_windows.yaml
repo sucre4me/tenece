@@ -18,5 +18,5 @@
       ansible.windows.win_group_membership:
         name: Administrators
         members:
-          - ubn_admin
+          - greenwich_admin
         state: present
