@@ -5,7 +5,7 @@
   - name: firewall rules
     firewalld:
         port: "{{ item }}"
-        state: disabled
+        state: enabled
         permanent: true
         immediate: true
     with_items:
